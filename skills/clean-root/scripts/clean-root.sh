@@ -5,7 +5,7 @@
 # hanya .git/, .github/, .gitignore, README.md, .vscode/ yang tersisa.
 #
 # Usage:
-#   .github/skills/clean-root/scripts/clean-root.sh
+#   .copilot/skills/clean-root/scripts/clean-root.sh
 #
 # Must be run from the repo root.
 
@@ -45,9 +45,21 @@ PYEOF
 fi
 
 # ── 2. Hapus file-file core dari state ──────────────────────────
+# Files to NEVER delete (must survive clean)
+SKIP_FILES=("Makefile" ".core-state.json")
+
 if [[ -f "$STATE_FILE" ]]; then
   if command -v jq &>/dev/null; then
     jq -r '.files | keys[]' "$STATE_FILE" | while IFS= read -r file; do
+      # Skip protected files
+      skip=false
+      for sf in "${SKIP_FILES[@]}"; do
+        if [[ "$file" == "$sf" ]]; then skip=true; break; fi
+      done
+      if $skip; then
+        echo "  ⊘ Skipped ${file} (protected)"
+        continue
+      fi
       target="${REPO_ROOT}/${file}"
       if [[ -f "$target" ]]; then
         rm -f "$target"
@@ -57,10 +69,12 @@ if [[ -f "$STATE_FILE" ]]; then
   else
     PY_LIST=$(cat << 'PYEOF'
 import json, sys
+SKIP = {"Makefile", ".core-state.json"}
 with open(sys.argv[1]) as f:
     state = json.load(f)
 for k in sorted(state['files'].keys()):
-    print(k)
+    if k not in SKIP:
+        print(k)
 PYEOF
 )
     while IFS= read -r file; do
@@ -111,7 +125,7 @@ fi
 
 # ── 7. Reset task queue & checkpoint ────────────────────────────
 # Delegasikan ke reset-tasks.sh untuk DRY
-RESET_SCRIPT="${REPO_ROOT}/.github/skills/reset-tasks/scripts/reset-tasks.sh"
+RESET_SCRIPT="${REPO_ROOT}/.copilot/skills/reset-tasks/scripts/reset-tasks.sh"
 if [[ -f "$RESET_SCRIPT" ]]; then
   bash "$RESET_SCRIPT" --quiet 2>/dev/null || true
   echo "  ✓ Reset .github/tasks/ (via reset-tasks.sh)"
@@ -120,4 +134,4 @@ fi
 echo ""
 echo "── Done ──"
 echo "  Repository is clean. Run init-core.sh to start fresh."
-echo "  .github/skills/init-core-project/scripts/init-core.sh"
+echo "  .copilot/skills/init-core-project/scripts/init-core.sh"
