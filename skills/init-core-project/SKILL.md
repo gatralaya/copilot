@@ -87,15 +87,3 @@ jq '.files["path/to/file.go"].created = true' .core-state.json > tmp.json && mv 
 
 The `scaffold.sh` in the `new-feature-module` skill automatically checks whether core has been initialized.
 If any core file has `created: false`, scaffold will refuse and ask to run `init-core.sh` first.
-
-## Sync Templates
-
-After editing core files (`core/router/router.go`, `core/templates/landing.html`, etc.),
-run the sync script to update the `.tmpl` templates:
-
-```bash
-.copilot/skills/init-core-project/scripts/sync-templates.sh
-```
-
-This script will:
-1. Copy all core files to `templates/` with `.tmpl` suffix
