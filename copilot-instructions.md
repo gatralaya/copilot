@@ -60,6 +60,7 @@ Project-wide guidelines applied to every interaction.
 | Explain module, how it works, end-to-end flow | **Direct** | `.copilot/prompts/explain-module.prompt.md` |
 | Squash commit, clean git history, combine commits | **Direct** — run skill | `.copilot/skills/squash-commits/SKILL.md` |
 | Release, version, tag, publish, changelog | **Direct** — run skill | `.copilot/skills/release/SKILL.md` |
+| Sync copilot, update submodule, push upstream, sync shared config | **Direct** — run skill | `.copilot/skills/sync-copilot/SKILL.md` |
 
 > **Correct order after cloning repo:**
 > 0. `clean-root` (if cleanup needed after experimentation)
