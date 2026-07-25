@@ -1,6 +1,6 @@
 ---
 name: sync-copilot
-description: Sync changes in .copilot/ submodule back to the upstream gatralaya/copilot repo.
+description: Sync .copilot/ submodule between local repo and upstream gatralaya/copilot.
 ---
 
 # Sync Copilot Skill
@@ -12,83 +12,131 @@ Use this skill when:
 - **Fixed template headers** — added/updated template comments in `.copilot/tasks/` or `.copilot/specs/`.
 - **Updated SKILL.md or scripts** — modified any skill definition or its scripts.
 - **Want to push upstream** — after local edits to the submodule, sync back to `gatralaya/copilot`.
+- **Want to pull upstream** — fetch and apply latest changes from `gatralaya/copilot`.
 
 DO NOT use for:
 - Changes to `.github/` (tasks, specs, workflows) — those are repo-specific, not shared.
 - Changes to `.gitmodules` or submodule URL — use manual git commands.
 
+## Quick Reference
+
+| Command | Description |
+|---|---|
+| `make sync` | Push local changes to upstream |
+| `make sync-pull` | Pull upstream changes |
+| `make sync-status` | Show sync status |
+| `sync-copilot.sh --help` | Show all options |
+
 ## How It Works
 
-The `sync-copilot.sh` script will:
+The script supports two directions:
+
+### Push (Local → Upstream)
 
 1. Enter `.copilot/` directory.
 2. Check for any modified/added/deleted files.
 3. If no changes, exit cleanly.
-4. Prompt for a commit message (or auto-generate one from git diff stats).
+4. Auto-generate commit message from diff stats (or use provided message).
 5. Stage and commit all changes.
 6. Push to upstream `gatralaya/copilot`.
 7. Return to parent repo and update the submodule reference.
 8. Commit the reference update in the parent repo.
 
+### Pull (Upstream → Local)
+
+1. Fetch latest from upstream.
+2. Check if there are new commits.
+3. Fast-forward merge to latest.
+4. Update parent repo reference.
+
 ## How to Run
 
-### Agent Flow (Recommended)
-
-The agent should check for changes first via `run_in_terminal`, then run the skill script.
-
-**Step 1 — Check for changes:**
+### Via Makefile (Recommended)
 
 ```bash
-cd .copilot && git status --short
+make sync              # Push local changes
+make sync-pull         # Pull upstream changes
+make sync-status       # Check sync status
 ```
 
-If empty, inform user: "No changes in `.copilot/` — nothing to sync."
+### Direct Script Usage
 
-**Step 2 — Run the sync script:**
+**Push mode (default):**
 
 ```bash
+# Interactive — auto-generate commit message
 .copilot/skills/sync-copilot/scripts/sync-copilot.sh
+
+# Non-interactive — use provided message
+.copilot/skills/sync-copilot/scripts/sync-copilot.sh "fix: update guardrails path"
 ```
 
-Or with a custom commit message:
+**Pull mode:**
 
 ```bash
-.copilot/skills/sync-copilot/scripts/sync-copilot.sh "fix: update guardrails path reference"
+.copilot/skills/sync-copilot/scripts/sync-copilot.sh --pull
 ```
 
-### Interactive Mode (No arguments)
+**Status check:**
 
 ```bash
-.copilot/skills/sync-copilot/scripts/sync-copilot.sh
+.copilot/skills/sync-copilot/scripts/sync-copilot.sh --status
 ```
 
-The script will:
-1. Auto-generate a commit message from diff stats (e.g., `"update: 5 files changed (2 skills, 1 agent, 2 templates)"`)
-2. Show the proposed message
-3. Ask for confirmation
-
-### Non-Interactive Mode (With message)
+**Dry run (preview):**
 
 ```bash
-.copilot/skills/sync-copilot/scripts/sync-copilot.sh "refactor: path cleanup for submodule"
+.copilot/skills/sync-copilot/scripts/sync-copilot.sh --dry-run
 ```
 
-Skips confirmation — commits and pushes immediately.
+## Status Output
+
+The `--status` flag shows:
+
+```
+── Sync Status ──
+
+📦 Local submodule (.copilot/):
+   Branch: main
+   Commit: 1e94221
+   Changes: 0 file(s)
+
+🌐 Upstream (gatralaya/copilot):
+   Commit: 1e94221
+   Ahead by: 0 commit(s)
+   Behind by: 0 commit(s)
+
+📂 Parent repo reference:
+   Points to: 1e94221
+   ✓ Parent repo reference is in sync.
+
+✓ Everything is in sync!
+```
 
 ## Output
 
-On success, the script prints:
+On success (push):
 
 ```
 ✓ Committed in .copilot: <message>
 ✓ Pushed to upstream (gatralaya/copilot)
 ✓ Parent repo reference updated: <commit-hash>
+
+🎉 Push complete! .copilot/ → gatralaya/copilot
 ```
 
-On failure, it exits with a clear error message.
+On success (pull):
+
+```
+✓ Fetched from upstream
+✓ Merged upstream changes
+✓ Parent repo reference updated: <commit-hash>
+
+🎉 Pull complete! Upstream changes applied.
+```
 
 ## Notes
 
 - This skill only works when the parent repo has a `.copilot` submodule configured.
 - Requires push access to `github.com:gatralaya/copilot.git`.
-- The parent repo commit message will be auto-generated: `chore: update .copilot submodule (<short summary>)`.
+- Pull mode uses `--ff-only` to prevent merge conflicts. Commit or stash local changes first if needed.
