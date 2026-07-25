@@ -2,7 +2,7 @@
 # init-core.sh — Initialize core project from templates.
 #
 # Creates all core files (root/, core/, cmd/, modules/) from templates
-# in .github/skills/init-core-project/templates/.
+# in .copilot/skills/init-core-project/templates/.
 #
 # Safe to run anytime:
 # - Files that ALREADY EXIST (tracked in .core-state.json) will not be overwritten.
@@ -12,7 +12,7 @@
 # Untuk memaksa recreate semua file: hapus state file atau set created=false.
 #
 # Usage:
-#   .github/skills/init-core-project/scripts/init-core.sh
+#   .copilot/skills/init-core-project/scripts/init-core.sh
 #
 # Must be run from the repo root.
 
