@@ -64,20 +64,20 @@ No prompts needed — fully automatic detection.
 ### Manual Run
 
 ```bash
-.github/skills/release/scripts/release.sh [major|minor|patch]
+.copilot/skills/release/scripts/release.sh [major|minor|patch]
 ```
 
 ### Examples
 
 ```bash
 # Interactive — asks for version type
-.github/skills/release/scripts/release.sh
+.copilot/skills/release/scripts/release.sh
 
 # Direct — auto-determine next version
-.github/skills/release/scripts/release.sh minor
+.copilot/skills/release/scripts/release.sh minor
 
 # Dry run — show what would happen without executing
-.github/skills/release/scripts/release.sh --dry-run
+.copilot/skills/release/scripts/release.sh --dry-run
 ```
 
 ## Version Scheme

@@ -28,7 +28,7 @@ The `reset-tasks.sh` script will:
 ## How to Run
 
 ```bash
-.github/skills/reset-tasks/scripts/reset-tasks.sh
+.copilot/skills/reset-tasks/scripts/reset-tasks.sh
 ```
 
 Run from the repo root. Idempotent and safe — does not touch code.

@@ -30,18 +30,18 @@ Do NOT use for:
 ### Install Card component
 
 ```bash
-.github/skills/add-card-component/scripts/install-card.sh
+.copilot/skills/add-card-component/scripts/install-card.sh
 ```
 
 Run from the repo root. The script will:
 1. Check if `components/Card/` already exists (skip if exists, use `--force` to overwrite)
-2. Copy all `.tmpl` templates from `.github/skills/add-card-component/templates/`
+2. Copy all `.tmpl` templates from `.copilot/skills/add-card-component/templates/`
 3. Remove `.tmpl` extension and place in `components/Card/`
 
 ### Template files
 
 ```
-.github/skills/add-card-component/templates/
+.copilot/skills/add-card-component/templates/
   components/
     Card/
       Card.tsx.tmpl           # Main container + sub-components
@@ -130,7 +130,7 @@ The component uses Tailwind CSS dark mode with `dark:` variants:
 
 ## Implementation Steps
 
-1. Run `.github/skills/add-card-component/scripts/install-card.sh` to copy templates
+1. Run `.copilot/skills/add-card-component/scripts/install-card.sh` to copy templates
 2. Verify files are created at `components/Card/`
 3. Run `npm run build -w components/Card` to verify (if workspace configured)
 4. Run `npm test` to verify no regressions

@@ -36,27 +36,30 @@ Project-wide guidelines applied to every interaction.
 
 ## Skills & Triggers
 
+> **Note:** Shared config (skills, agents, prompts, instructions) lives in `.copilot/` submodule.
+> Repo-specific state (tasks, specs) lives in `.github/`.
+
 | Trigger keywords | Action | Skill file |
 |---|---|---|
-| Init core, init project, core files, reset core, template core | **Direct** — run skill | `.github/skills/init-core-project/SKILL.md` |
-| New feature, new module, scaffold, create feature | **Default agent executes directly** — queue → askQuestions → spec → scaffold | `.github/skills/new-feature-module/SKILL.md` |
-| Feature spec, feature analysis, specification, clarify requirement | **Default agent executes directly** — ask user → write spec | `.github/skills/feature-spec/SKILL.md` |
-| UI sketch, wireframe, UI sketch, custom UI, layout design | **Default agent executes directly** — ask user → analyze → write UI manifest | `.github/skills/feature-spec/SKILL.md` (section UI Design) |
-| Shared component, promote component, move to shared | **Direct** — run skill | `.github/skills/add-shared-component/SKILL.md` |
-| Card component, modal card, wizard card, step form container | **Direct** — run skill | `.github/skills/add-card-component/SKILL.md` |
-| Migration, database schema, add table, alter column, db change | **Direct** — run skill | `.github/skills/db-migration/SKILL.md` |
-| Clean root, clean root, reset project, delete all core/modules files | **Direct** — run skill | `.github/skills/clean-root/SKILL.md` |
-| Reset task queue, clean queue, delete checkpoint, reset tasks | **Direct** — run skill | `.github/skills/reset-tasks/SKILL.md` |
-| Webhook, auto-trigger, issue to task, from Linear/GitHub to queue | **Direct** — run skill | `.github/skills/webhook-to-task/SKILL.md` |
-| Task queue, orchestrator, dispatch, resume, checkpoint | **Direct** | `.github/agents/orchestrator.agent.md` |
-| Checkpoint, save progress, session state | **Direct** | `.github/prompts/checkpoint.prompt.md` |
-| Add endpoint, new route, add endpoint to existing module | **Direct** | `.github/prompts/add-endpoint.prompt.md` |
-| Backend Go implementation, memory/GC, repository, service, handler | Dispatch to `@implementer-be` | `.github/agents/implementer-be.agent.md` |
-| Frontend React/TS implementation, Tailwind, components, api.ts | Dispatch to `@implementer-fe` | `.github/agents/implementer-fe.agent.md` |
-| Review diff, review PR, code review, check module boundary | Dispatch to `@reviewer` | `.github/prompts/code-review.prompt.md` |
-| Explain module, how it works, end-to-end flow | **Direct** | `.github/prompts/explain-module.prompt.md` |
-| Squash commit, clean git history, combine commits | **Direct** — run skill | `.github/skills/squash-commits/SKILL.md` |
-| Release, version, tag, publish, changelog | **Direct** — run skill | `.github/skills/release/SKILL.md` |
+| Init core, init project, core files, reset core, template core | **Direct** — run skill | `.copilot/skills/init-core-project/SKILL.md` |
+| New feature, new module, scaffold, create feature | **Default agent executes directly** — queue → askQuestions → spec → scaffold | `.copilot/skills/new-feature-module/SKILL.md` |
+| Feature spec, feature analysis, specification, clarify requirement | **Default agent executes directly** — ask user → write spec | `.copilot/skills/feature-spec/SKILL.md` |
+| UI sketch, wireframe, UI sketch, custom UI, layout design | **Default agent executes directly** — ask user → analyze → write UI manifest | `.copilot/skills/feature-spec/SKILL.md` (section UI Design) |
+| Shared component, promote component, move to shared | **Direct** — run skill | `.copilot/skills/add-shared-component/SKILL.md` |
+| Card component, modal card, wizard card, step form container | **Direct** — run skill | `.copilot/skills/add-card-component/SKILL.md` |
+| Migration, database schema, add table, alter column, db change | **Direct** — run skill | `.copilot/skills/db-migration/SKILL.md` |
+| Clean root, clean root, reset project, delete all core/modules files | **Direct** — run skill | `.copilot/skills/clean-root/SKILL.md` |
+| Reset task queue, clean queue, delete checkpoint, reset tasks | **Direct** — run skill | `.copilot/skills/reset-tasks/SKILL.md` |
+| Webhook, auto-trigger, issue to task, from Linear/GitHub to queue | **Direct** — run skill | `.copilot/skills/webhook-to-task/SKILL.md` |
+| Task queue, orchestrator, dispatch, resume, checkpoint | **Direct** | `.copilot/agents/orchestrator.agent.md` |
+| Checkpoint, save progress, session state | **Direct** | `.copilot/prompts/checkpoint.prompt.md` |
+| Add endpoint, new route, add endpoint to existing module | **Direct** | `.copilot/prompts/add-endpoint.prompt.md` |
+| Backend Go implementation, memory/GC, repository, service, handler | Dispatch to `@implementer-be` | `.copilot/agents/implementer-be.agent.md` |
+| Frontend React/TS implementation, Tailwind, components, api.ts | Dispatch to `@implementer-fe` | `.copilot/agents/implementer-fe.agent.md` |
+| Review diff, review PR, code review, check module boundary | Dispatch to `@reviewer` | `.copilot/prompts/code-review.prompt.md` |
+| Explain module, how it works, end-to-end flow | **Direct** | `.copilot/prompts/explain-module.prompt.md` |
+| Squash commit, clean git history, combine commits | **Direct** — run skill | `.copilot/skills/squash-commits/SKILL.md` |
+| Release, version, tag, publish, changelog | **Direct** — run skill | `.copilot/skills/release/SKILL.md` |
 
 > **Correct order after cloning repo:**
 > 0. `clean-root` (if cleanup needed after experimentation)
@@ -72,7 +75,7 @@ Project-wide guidelines applied to every interaction.
 
 | Agent | Tools | Can edit? | Auto-invokable? | Entry point? |
 |---|---|---|---|---|
-| `@orchestrator` | `read, search, edit` — `.github/tasks/` only | ✅ `.github/tasks/` only | ✅ Yes | ✅ **YES** |
+| `@orchestrator` | `read, search, edit` — `.github/tasks/` only | ✅ `.github/tasks/` only (repo-specific) | ✅ Yes | ✅ **YES** |
 | `@implementer` (index) | `execute, read, edit, search` | ✅ Yes | ✅ Yes | ❌ |
 | `@implementer-be` (backend) | `execute, read, edit, search` | ✅ Yes | ✅ Yes | ❌ |
 | `@implementer-fe` (frontend) | `execute, read, edit, search` | ✅ Yes | ✅ Yes | ❌ |

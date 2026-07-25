@@ -35,7 +35,7 @@ The `clean-root.sh` script will:
 ## How to Run
 
 ```bash
-.github/skills/clean-root/scripts/clean-root.sh
+.copilot/skills/clean-root/scripts/clean-root.sh
 ```
 
 Run from the repo root. No confirmation needed — the script is idempotent and safe.

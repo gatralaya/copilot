@@ -29,7 +29,7 @@ All core project files (`main.go`, `go.mod`, `core/`, `cmd/migrate/main.go`, `mo
 are stored as templates in:
 
 ```
-.github/skills/init-core-project/templates/
+.copilot/skills/init-core-project/templates/
 ```
 
 State tracking is stored in:
@@ -58,7 +58,7 @@ Format state:
 ## How to Run
 
 ```bash
-.github/skills/init-core-project/scripts/init-core.sh
+.copilot/skills/init-core-project/scripts/init-core.sh
 ```
 
 Run from the repo root. The script will:
@@ -94,7 +94,7 @@ After editing core files (`core/router/router.go`, `core/templates/landing.html`
 run the sync script to update the `.tmpl` templates:
 
 ```bash
-.github/skills/init-core-project/scripts/sync-templates.sh
+.copilot/skills/init-core-project/scripts/sync-templates.sh
 ```
 
 This script will:

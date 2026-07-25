@@ -25,10 +25,10 @@ Each module registers itself automatically via a **self-registration pattern**:
 > **Prerequisite:** Before adding a module, ensure the core project has been initialized.
 > Run `init-core.sh` if not yet done:
 > ```bash
-> .github/skills/init-core-project/scripts/init-core.sh
+> .copilot/skills/init-core-project/scripts/init-core.sh
 > ```
 
-- **Add**: run `.github/skills/new-feature-module/scripts/scaffold.sh <feature>`,
+- **Add**: run `.copilot/skills/new-feature-module/scripts/scaffold.sh <feature>`,
   then add a blank import to `modules/register.go` **and** add
   `"modules/<feature>"` to `workspaces` in the root `package.json`, then run
   `npm install` from the repo root.

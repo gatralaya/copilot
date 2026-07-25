@@ -24,7 +24,7 @@ There are two modes: **non-interactive** (CLI arguments) and **interactive** (st
 ### Non-interactive mode
 
 ```bash
-.github/skills/new-feature-module/scripts/scaffold.sh <feature-name> [--ssr] [layers...]
+.copilot/skills/new-feature-module/scripts/scaffold.sh <feature-name> [--ssr] [layers...]
 ```
 
 **Note:** Run this from the repo root (the directory containing `modules/`, `core/`, etc.).
@@ -32,7 +32,7 @@ There are two modes: **non-interactive** (CLI arguments) and **interactive** (st
 **Prerequisite:** Ensure the core project has been initialized first via the `init-core-project` skill.
 If not, run:
 ```bash
-.github/skills/init-core-project/scripts/init-core.sh
+.copilot/skills/init-core-project/scripts/init-core.sh
 ```
 Scaffold will refuse to run if any core files have not been created yet.
 
@@ -64,7 +64,7 @@ Scaffold will refuse to run if any core files have not been created yet.
 Run with the `-i` or `--interactive` flag:
 
 ```bash
-.github/skills/new-feature-module/scripts/scaffold.sh -i
+.copilot/skills/new-feature-module/scripts/scaffold.sh -i
 ```
 
 The script will guide you step-by-step:
@@ -303,5 +303,5 @@ with skeleton rendering. The template reads `.InitialHTML` for server content an
 ## Templates
 
 The literal file templates used by the script are in the same folder as `SKILL.md`
-(`.github/skills/new-feature-module/*.tmpl`) if you need to inspect or hand-edit the
+(`.copilot/skills/new-feature-module/*.tmpl`) if you need to inspect or hand-edit the
 boilerplate shape without running the script.

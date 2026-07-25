@@ -56,7 +56,7 @@ Then run the script with the appropriate flag:
 ### CLI Usage
 
 ```bash
-.github/skills/squash-commits/scripts/squash-commits.sh [--push|--no-push] "Pesan commit"
+.copilot/skills/squash-commits/scripts/squash-commits.sh [--push|--no-push] "Pesan commit"
 ```
 
 **Options:**
@@ -68,10 +68,10 @@ Then run the script with the appropriate flag:
 
 ```bash
 # Squash with push
-.github/skills/squash-commits/scripts/squash-commits.sh --push "feat: add billing module"
+.copilot/skills/squash-commits/scripts/squash-commits.sh --push "feat: add billing module"
 
 # Squash without push
-.github/skills/squash-commits/scripts/squash-commits.sh --no-push "Initial commit"
+.copilot/skills/squash-commits/scripts/squash-commits.sh --no-push "Initial commit"
 ```
 
 ## After Squash

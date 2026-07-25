@@ -31,7 +31,7 @@ The script automatically:
 ### Mode 1: Direct arguments
 
 ```bash
-.github/skills/webhook-to-task/scripts/webhook-to-task.sh \
+.copilot/skills/webhook-to-task/scripts/webhook-to-task.sh \
   --title "Blog page error 500" \
   --priority P0 \
   --source "manual" \
@@ -42,20 +42,20 @@ The script automatically:
 
 ```bash
 cat /tmp/issue.json | \
-  .github/skills/webhook-to-task/scripts/webhook-to-task.sh --stdin --format github
+  .copilot/skills/webhook-to-task/scripts/webhook-to-task.sh --stdin --format github
 ```
 
 ### Mode 3: Plain text pipe
 
 ```bash
 echo -e "Fix login broken\nToken expiry not handled, users get 401" | \
-  .github/skills/webhook-to-task/scripts/webhook-to-task.sh --stdin
+  .copilot/skills/webhook-to-task/scripts/webhook-to-task.sh --stdin
 ```
 
 ### Mode 4: From file with explicit format
 
 ```bash
-.github/skills/webhook-to-task/scripts/webhook-to-task.sh \
+.copilot/skills/webhook-to-task/scripts/webhook-to-task.sh \
   --file /tmp/webhook-payload.json \
   --format linear
 ```

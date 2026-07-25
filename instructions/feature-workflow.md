@@ -85,10 +85,10 @@ After the spec and manifest are approved by the user, the implementer runs:
 
 ```bash
 # 1. Generate custom template overrides from the manifest
-.github/skills/new-feature-module/scripts/generate-ui.sh <feature> .github/specs/<feature>-ui.yaml
+.copilot/skills/new-feature-module/scripts/generate-ui.sh <feature> .github/specs/<feature>-ui.yaml
 
 # 2. Scaffold with --custom-ui pointing to the generate-ui output
-.github/skills/new-feature-module/scripts/scaffold.sh <feature> --custom-ui /tmp/<feature>-ui [--ssr] [layers]
+.copilot/skills/new-feature-module/scripts/scaffold.sh <feature> --custom-ui /tmp/<feature>-ui [--ssr] [layers]
 ```
 
 `scaffold.sh --custom-ui` will:
@@ -117,7 +117,7 @@ vscode_askQuestions([
 
 After the user fills in the answers, the agent runs:
 ```bash
-.github/skills/new-feature-module/scripts/scaffold.sh <feature-name> [--ssr] [layers]
+.copilot/skills/new-feature-module/scripts/scaffold.sh <feature-name> [--ssr] [layers]
 ```
 
 ## Step-by-step

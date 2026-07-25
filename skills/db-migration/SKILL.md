@@ -40,7 +40,7 @@ operation, not a schema migration.
 ## Running the migration across all DBs
 
 ```bash
-.github/skills/db-migration/scripts/run-migration.sh <migration-file>
+.copilot/skills/db-migration/scripts/run-migration.sh <migration-file>
 ```
 
 - Applies the migration to every `*.db` file under `db/` (tenants + `global.db`), in order,

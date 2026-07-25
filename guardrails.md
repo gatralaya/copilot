@@ -30,7 +30,7 @@ If the user requests any of the above, respond with: *"Sorry, I can't assist wit
 - Do not overwrite existing modules — use the `new-feature-module` skill only for new modules.
 - **Before scaffolding a new module**, ensure `init-core.sh` has been run. If unsure, run:
   ```bash
-  .github/skills/init-core-project/scripts/init-core.sh
+  .copilot/skills/init-core-project/scripts/init-core.sh
   ```
 - After writing code, run `go build ./... && go test ./...` to verify.
 
