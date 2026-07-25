@@ -44,8 +44,8 @@ Format state:
 {
   "version": 1,
   "files": {
-    "main.go": { "created": true, "hash": "c650abdfea7d4701" },
-    "core/router/router.go": { "created": true, "hash": "6a7db0c91cc68360" },
+    "main.go": { "created": true },
+    "core/router/router.go": { "created": true },
     ...
   }
 }
@@ -53,7 +53,7 @@ Format state:
 
 - `created: true` = file has been created before, will NOT be overwritten
 - `created: false` = file will be created when init-core runs
-- `hash` = SHA256[:16] of file content when first created (for reference)
+
 
 ## How to Run
 
@@ -99,4 +99,3 @@ run the sync script to update the `.tmpl` templates:
 
 This script will:
 1. Copy all core files to `templates/` with `.tmpl` suffix
-2. Update hash in `.core-state.json`

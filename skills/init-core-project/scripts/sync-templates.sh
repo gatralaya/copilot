@@ -58,36 +58,5 @@ while IFS= read -r rel; do
   fi
 done <<< "$FILES"
 
-# Update hash di state file
-echo ""
-echo "── Updating state hashes ──"
-if command -v jq &>/dev/null; then
-  # Generate hash untuk setiap file, update state
-  jq '.files as $files | $files | keys[]' "$STATE_FILE" | while IFS= read -r rel_raw; do
-    rel=$(echo "$rel_raw" | tr -d '"')
-    if [[ -f "$rel" ]]; then
-      hash=$(sha256sum "$rel" | head -c 16)
-      jq ".files[\"$rel\"].hash = \"$hash\"" "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
-    fi
-  done
-  echo "  ✓ Hashes updated"
-elif command -v python3 &>/dev/null; then
-  python3 -c "
-import json, hashlib
-with open('$STATE_FILE') as f:
-    state = json.load(f)
-for rel, info in state['files'].items():
-    try:
-        with open(rel, 'rb') as fh:
-            info['hash'] = hashlib.sha256(fh.read()).hexdigest()[:16]
-    except FileNotFoundError:
-        pass
-with open('$STATE_FILE', 'w') as f:
-    json.dump(state, f, indent=2)
-    f.write('\n')
-  " 2>/dev/null || true
-  echo "  ✓ Hashes updated"
-fi
-
 echo ""
 echo "── Done (synced: ${SYNCED}, skipped: ${SKIPPED}) ──"

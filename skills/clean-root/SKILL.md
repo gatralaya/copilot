@@ -21,7 +21,7 @@ DO NOT use for:
 
 The `clean-root.sh` script will:
 
-1. Reset `.core-state.json` — all `created` set to `false`, all `hash` cleared.
+1. Reset `.core-state.json` — all `created` set to `false`.
 2. Delete all files recorded in `.core-state.json` (24 files: `main.go`, `go.mod`,
    entire `core/`, `cmd/`, `modules/register.go`, `package.json`, config files, etc.)
 3. Delete the `modules/` folder (all scaffolded modules).

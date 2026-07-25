@@ -21,7 +21,7 @@ echo ""
 if [[ -f "$STATE_FILE" ]]; then
   if command -v jq &>/dev/null; then
     FILECOUNT=$(jq '.files | length' "$STATE_FILE")
-    jq '.files |= with_entries(.value.created = false | .value.hash = "")' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+    jq '.files |= with_entries(.value.created = false)' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
     echo "  ✓ Reset .core-state.json (${FILECOUNT} files → created: false)"
   else
     # fallback ke python3 jika jq tidak tersedia
@@ -32,7 +32,6 @@ with open(path) as f:
     state = json.load(f)
 for v in state['files'].values():
     v['created'] = False
-    v['hash'] = ''
 with open(path, 'w') as f:
     json.dump(state, f, indent=2)
     f.write('\n')

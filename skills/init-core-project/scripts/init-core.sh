@@ -53,7 +53,7 @@ for root, dirs, files in os.walk(templates_dir):
         if f.endswith('.tmpl'):
             rel = os.path.relpath(os.path.join(root, f), templates_dir)
             rel = re.sub(r'\.tmpl$', '', rel)
-            state['files'][rel] = {'created': False, 'hash': ''}
+            state['files'][rel] = {'created': False}
 with open('$STATE_FILE', 'w') as fh:
     json.dump(state, fh, indent=2)
     fh.write('\n')
@@ -67,7 +67,7 @@ for root, dirs, files in os.walk(templates_dir):
         if f.endswith('.tmpl'):
             rel = os.path.relpath(os.path.join(root, f), templates_dir)
             rel = re.sub(r'\.tmpl$', '', rel)
-            state['files'][rel] = {'created': False, 'hash': ''}
+            state['files'][rel] = {'created': False}
 with open('$STATE_FILE', 'w') as fh:
     json.dump(state, fh, indent=2)
     fh.write('\n')
@@ -85,7 +85,7 @@ with open('$STATE_FILE', 'w') as fh:
 elif $FORCE; then
   # --force: reset semua state ke created:false agar ditimpa
   echo "  → Force mode: reset .core-state.json..."
-  jq '.files |= with_entries(.value.created = false | .value.hash = "")' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+  jq '.files |= with_entries(.value.created = false)' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
   CREATED_COUNT=$(jq '.files | length' "$STATE_FILE")
   echo "  ✓ .core-state.json reset (${CREATED_COUNT} files → created: false)"
 fi
