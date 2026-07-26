@@ -17,35 +17,15 @@ STATE_FILE="${REPO_ROOT}/.core-state.json"
 echo "── Cleaning root ──"
 echo ""
 
-# ── 1. Reset .core-state.json ────────────────────────────────────
+# ── 1. Hapus .core-state.json ────────────────────────────────────
 if [[ -f "$STATE_FILE" ]]; then
-  if command -v jq &>/dev/null; then
-    FILECOUNT=$(jq '.files | length' "$STATE_FILE")
-    jq '.files |= with_entries(.value.created = false)' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
-    echo "  ✓ Reset .core-state.json (${FILECOUNT} files → created: false)"
-  else
-    # fallback ke python3 jika jq tidak tersedia
-    PY_SCRIPT=$(cat << 'PYEOF'
-import json, sys
-path = sys.argv[1]
-with open(path) as f:
-    state = json.load(f)
-for v in state['files'].values():
-    v['created'] = False
-with open(path, 'w') as f:
-    json.dump(state, f, indent=2)
-    f.write('\n')
-print(len(state['files']))
-PYEOF
-)
-    FILECOUNT=$(python3 -c "$PY_SCRIPT" "$STATE_FILE")
-    echo "  ✓ Reset .core-state.json (${FILECOUNT} files → created: false)"
-  fi
+  rm -f "$STATE_FILE"
+  echo "  ✓ Removed .core-state.json"
 fi
 
 # ── 2. Hapus file-file core dari state ──────────────────────────
 # Files to NEVER delete (must survive clean)
-SKIP_FILES=("Makefile" ".core-state.json")
+SKIP_FILES=("Makefile")
 
 if [[ -f "$STATE_FILE" ]]; then
   if command -v jq &>/dev/null; then
@@ -68,7 +48,7 @@ if [[ -f "$STATE_FILE" ]]; then
   else
     PY_LIST=$(cat << 'PYEOF'
 import json, sys
-SKIP = {"Makefile", ".core-state.json"}
+SKIP = {"Makefile"}
 with open(sys.argv[1]) as f:
     state = json.load(f)
 for k in sorted(state['files'].keys()):
