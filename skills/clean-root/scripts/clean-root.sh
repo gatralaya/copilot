@@ -17,13 +17,7 @@ STATE_FILE="${REPO_ROOT}/.core-state.json"
 echo "── Cleaning root ──"
 echo ""
 
-# ── 1. Hapus .core-state.json ────────────────────────────────────
-if [[ -f "$STATE_FILE" ]]; then
-  rm -f "$STATE_FILE"
-  echo "  ✓ Removed .core-state.json"
-fi
-
-# ── 2. Hapus file-file core dari state ──────────────────────────
+# ── 1. Hapus file-file core dari state ──────────────────────────
 # Files to NEVER delete (must survive clean)
 SKIP_FILES=("Makefile")
 
@@ -64,6 +58,10 @@ PYEOF
       fi
     done < <(python3 -c "$PY_LIST" "$STATE_FILE")
   fi
+
+  # Hapus .core-state.json setelah file-file dihapus
+  rm -f "$STATE_FILE"
+  echo "  ✓ Removed .core-state.json"
 fi
 
 # ── 3. Remove core/ and cmd/ folders (empty after removing files) ──
