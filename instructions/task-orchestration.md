@@ -82,12 +82,19 @@ because `disable-model-invocation: false`.
 
 | Prompt theme | Agent |
 |---|---|
-| **Entry point for all requests** — task queue, dispatch, progress, resume | `@orchestrator` (auto-invoke) |
-| **Large** feature requests (many stakeholders, user roles), business analysis, user stories | `planner` |
-| Feature analysis, clarify requirements, create technical spec | `analyst` |
-| Implement feature, coding, bugfix, fix, refactor, create endpoint, create module | `implementer` |
-| Review, code review, check architecture, module boundary, code review | `reviewer` |
+| **Entry point for ALL requests** — task queue, dispatch, progress, resume | `@orchestrator` (auto-invoke) |
+| **Large** feature requests (many stakeholders, user roles), business analysis, user stories | `@planner` (via orchestrator) |
+| Feature analysis, clarify requirements, create technical spec | `@analyst` (via orchestrator) |
+| Implement feature, coding, bugfix, fix, refactor, create endpoint, create module | `@implementer` (via orchestrator) |
+| **Review, code review, check architecture, module boundary** | `@reviewer` (via orchestrator) |
+| **Deploy to production** ("deploy", "deploy to prod", "push to GCE") | `@orchestrator` reads `.github/skills/deploy/SKILL.md`, runs deploy script |
+| **Release / version bump** ("release", "new version", "publish") | `@orchestrator` reads `.copilot/skills/release/SKILL.md` |
 
 > **IMPORTANT:** Do NOT call `@analyst`, `@implementer`, or `@reviewer` directly.
 > All requests must go through `@orchestrator` first — it will log the task to the queue
 > and dispatch to the appropriate agent.
+
+> **Review requests:** When the user asks "review module X" or "review the index module",
+> the default agent MUST route to `@orchestrator`, which dispatches `@reviewer`.
+> The reviewer uses `.copilot/prompts/code-review.prompt.md` as its review checklist.
+> Do NOT perform the review inline — always delegate.

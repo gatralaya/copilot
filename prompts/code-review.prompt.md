@@ -1,11 +1,13 @@
 ---
-agent: 'agent'
-description: 'Review a diff/PR against this repo module-boundary rules'
+agent: 'reviewer'
+description: 'Review a module, diff, or PR against this repo module-boundary and architecture rules. Trigger: user says "review module X", "review the index module", "code review", "check architecture", etc.'
 ---
 
-Review the current changes (`${selection}` if a specific range is selected, otherwise the
-working tree diff) against the architecture rules in
-[copilot-instructions.md](../copilot-instructions.md).
+Review the module `${input:module:Which module to review? (folder name under modules/, or leave empty for working tree diff)}` against the repository rules in `.github/copilot-instructions.md`.
+
+If a module name is provided, read all files in `modules/<module>/` and review them holistically.
+If a specific range is selected (`${selection}`), review that range instead.
+Otherwise, review the working tree diff.
 
 Check specifically for:
 

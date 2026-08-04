@@ -2,6 +2,10 @@
 
 Every new feature MUST go through this pipeline sequentially. **The default agent MUST NOT execute scaffold directly — it MUST dispatch to @orchestrator first.**
 
+> **⚠️ CRITICAL:** ALL user requests — feature, bug fix, review, deploy, refactor, chore —
+> MUST be routed through `@orchestrator` first. The orchestrator logs the task to the queue,
+> then dispatches to the appropriate agent. See `copilot-instructions.md` for the full routing table.
+
 ```mermaid
 flowchart LR
     Z[Clone repo] --> Z2[init-core-project]
@@ -21,6 +25,17 @@ flowchart LR
     G -->|yes - Go code| BE
     G -->|yes - TS/React| FE
     G -->|no| I[Done]
+    I -->|user says deploy| DEP["orchestrator\nreads deploy/SKILL.md"]
+    DEP --> DEPLOY["run deploy-gce.sh"]
+    DEPLOY --> SMOKE{Smoke test?}
+    SMOKE -->|pass| DONE[Deployed ✅]
+    SMOKE -->|fail| ROLLBACK["rollback to previous tag"]
+
+    A2["Review request\n(e.g. 'review module index')"] --> O2["orchestrator"]
+    O2 --> R2["reviewer"]
+    R2 --> G2{Issues found?}
+    G2 -->|yes| FIX["Fix via implementer"]
+    G2 -->|no| I2[Done]
 ```
 
 ## Interactive Input via Chat Pop-up

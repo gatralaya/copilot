@@ -8,6 +8,10 @@ You are the **orchestrator** — the entry point for ALL user requests in this r
 
 **You are auto-invoked first** when a user sends a request. Your job: log the task, then dispatch to the right agent.
 
+> **CRITICAL RULE:** The default agent MUST NOT execute any task directly.
+> Every user request MUST go through you first. The only exception is
+> pure informational answers (no file changes, no terminal commands).
+
 ## Tool Restriction
 
 You can ONLY write to paths under `.github/tasks/`. You can NOT edit code files,
@@ -60,9 +64,16 @@ Check if `.github/tasks/session/current.md` contains an active checkpoint (not a
 | Spec ready, **frontend/React** work (.tsx, components, api.ts, Tailwind, esbuild) | `@implementer-fe` |
 | Spec ready, **full-stack** (BE + FE) | `@implementer` (index) → routes to BE/FE |
 | Implementation done, needs review | `@reviewer` |
+| **User asks to review a module** (e.g. "review module index", "review the quotes module") | `@reviewer` — use `.copilot/prompts/code-review.prompt.md` |
 | Bug fix backend (root cause clear) | `@implementer-be` directly |
 | Bug fix frontend (root cause clear) | `@implementer-fe` directly |
 | User asks to resume/continue | Read checkpoint → call appropriate agent for next step |
+| **User asks to deploy** ("deploy", "deploy to prod", "push to GCE") | Read `.github/skills/deploy/SKILL.md`, run `./scripts/deploy-gce.sh`, report result |
+| **User asks for release** ("release", "new version", "publish") | Read `.copilot/skills/release/SKILL.md`, run release workflow |
+
+> **Review dispatch note:** When dispatching `@reviewer`, pass the module name and reference
+> `.copilot/prompts/code-review.prompt.md` as the review checklist. The reviewer should
+> read the module's files and check against architecture and module boundary rules.
 
 **Notes for dispatch to @analyst:**
 ⚠️ **IMPORTANT — MUST read this before dispatching:**

@@ -58,6 +58,41 @@ This is a **git submodule** used by [Flow](https://github.com/ynwd/flow) and oth
 
 This repo is meant to be used as a **git submodule** — not cloned directly.
 
+## Parent repo integration
+
+When a repository includes this submodule, it should treat the contents of `.copilot/agents`, `.copilot/prompts`, `.copilot/skills`, `.copilot/instructions`, and `.copilot/guardrails.md` as reusable Copilot assets. The parent repository should create its own repo-specific instructions file at `.github/copilot-instructions.md` and use that file as the canonical entry point for routing rules, workflow policy, task handling, and repository conventions.
+
+For template-based usage, the parent repo should create or adapt `.github/copilot-instructions.md` to fit its own conventions, while keeping shared agent/skill/prompt definitions in the submodule. Keep repo-specific state such as tasks, specs, and workflow artifacts in `.github/`, and avoid duplicating the shared agent/skill/prompt definitions in the parent repository.
+
+### What the parent repo should put in `.github/copilot-instructions.md`
+
+Users should create a file like this in the parent repository:
+
+```md
+# Repository Custom Instructions
+
+Project-wide guidelines applied to every interaction.
+
+> **Canonical instruction file:** This repository keeps its repo-specific Copilot instructions here, in `.github/copilot-instructions.md`.
+>
+> **Submodule-aware integration:** This repository uses `.copilot` as a shared submodule. The shared assets under `.copilot/agents`, `.copilot/prompts`, `.copilot/skills`, and `.copilot/instructions` are reusable implementation assets.
+
+## Routing rules
+
+- Use the shared submodule assets for agents, prompts, skills, and reusable guidance.
+- Keep repo-specific policy, conventions, and task workflow in this file.
+- Use `.github/tasks/queue.md` for task tracking and `.github/specs/` for feature specs.
+
+## Default workflow
+
+1. Create or update a task in `.github/tasks/queue.md`.
+2. Gather requirements and write the spec in `.github/specs/<feature>.md` when needed.
+3. Use the relevant shared skill or prompt from `.copilot/` when appropriate.
+4. Keep implementation and repo-specific decisions in this repository, not in the submodule.
+```
+
+This example is intentionally lightweight and should be expanded with project-specific conventions, preferred commands, and architectural rules.
+
 ### Add to your repo
 
 ```bash
@@ -83,7 +118,7 @@ git submodule update --remote --merge
 | **Shared config** (agents, skills, prompts, instructions) | This repo (`.copilot/`) | Shared config maintainers |
 | **Repo-specific state** (tasks, specs, CI/CD) | Parent repo (`.github/`) | Repo developers |
 
-The parent repo's `.github/copilot-instructions.md` is a **thin wrapper** that points to `.copilot/copilot-instructions.md` as the canonical entry point.
+The parent repo's `.github/copilot-instructions.md` is the canonical entry point for repo-specific behavior, while `.copilot/` provides reusable agents, prompts, skills, and instructions.
 
 ### Path Convention
 

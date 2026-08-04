@@ -33,6 +33,7 @@ If the user requests any of the above, respond with: *"Sorry, I can't assist wit
   .copilot/skills/init-core-project/scripts/init-core.sh
   ```
 - After writing code, run `go build ./... && go test ./...` to verify.
+- **ALL requests MUST go through `@orchestrator` first** — feature, bug fix, review, deploy, refactor, chore. The orchestrator logs the task to the queue, then dispatches to the appropriate agent. The default agent MUST NOT execute any task directly.
 
 ## 4. Architecture
 
