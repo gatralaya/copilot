@@ -27,7 +27,7 @@ const variantStyles: Record<string, string> = {
   panel: 'bg-bg-secondary border border-border-subtle rounded-lg',
 };
 
-export const Card = forwardRef<HTMLDivElement, CardProps>(
+const _Card = forwardRef<HTMLDivElement, CardProps>(
   ({ variant = 'default', children, className }, ref) => {
     return (
       <div
@@ -44,15 +44,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
   }
 );
 
-Card.displayName = 'Card';
+_Card.displayName = 'Card';
 
 // Attach sub-components with proper typing
-const CardWithSub = Card as unknown as CardComponent;
-CardWithSub.Header = CardHeader;
-CardWithSub.Content = CardContent;
-CardWithSub.Footer = CardFooter;
-
-export { CardWithSub };
+export const Card = _Card as unknown as CardComponent;
+Card.Header = CardHeader;
+Card.Content = CardContent;
+Card.Footer = CardFooter;
 
 // ============================================
 // Card.Header

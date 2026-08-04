@@ -27,13 +27,15 @@ echo "── Installing Card component ──"
 # Create target directory
 mkdir -p "$TARGET_DIR"
 
-# Copy templates (remove .tmpl extension)
+# Copy templates (remove .tmpl extension, fix Go template escapes)
 for tmpl in "$TEMPLATES_DIR"/components/Card/*.tmpl; do
   filename="$(basename "$tmpl" .tmpl)"
   if [[ -f "$TARGET_DIR/$filename" ]] && [[ "$FORCE" != "true" ]]; then
     echo "  ⊘ $filename (exists, skipped)"
   else
     cp "$tmpl" "$TARGET_DIR/$filename"
+    # Fix Go template escapes: restore {{ and }} from escaped form
+    perl -pi -e 's/\{ \{/\{\{/g; s/\} \}/\}\}/g' "$TARGET_DIR/$filename"
     echo "  ✓ $filename"
   fi
 done
