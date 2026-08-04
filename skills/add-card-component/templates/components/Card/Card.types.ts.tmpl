@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ForwardRefExoticComponent, ReactNode, RefAttributes } from 'react';
 
 // ============================================
 // Card Container
@@ -80,4 +80,14 @@ export interface CardFooterProps {
   className?: string;
   /** Custom content to render in center (overrides stepIndicator) */
   centerContent?: ReactNode;
+}
+
+// ============================================
+// Card (with sub-components)
+// ============================================
+
+export interface CardComponent extends ForwardRefExoticComponent<CardProps & RefAttributes<HTMLDivElement>> {
+  Header: React.FC<CardHeaderProps>;
+  Content: React.FC<CardContentProps>;
+  Footer: React.FC<CardFooterProps>;
 }

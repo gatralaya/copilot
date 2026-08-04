@@ -113,20 +113,21 @@ components/
 
 ## Theme Support
 
-The component uses Tailwind CSS dark mode with `dark:` variants:
+The component uses **project design tokens** (CSS custom properties mapped to Tailwind v4 `@theme`), NOT raw Tailwind `dark:` variants. This ensures consistency with `app.css`.
 
-| Element | Light Mode | Dark Mode |
-|---------|-----------|-----------|
-| Card bg | `bg-white` | `dark:bg-gray-900` |
-| Card border | `border-gray-200` | `dark:border-gray-700` |
-| Text | `text-gray-900` | `dark:text-gray-100` |
-| Muted text | `text-gray-500` | `dark:text-gray-400` |
-| Progress active | `bg-blue-600` | `dark:bg-blue-500` |
-| Progress inactive | `bg-gray-200` | `dark:bg-gray-700` |
-| Button primary | `bg-blue-600 text-white` | `dark:bg-blue-500` |
-| Button secondary | `bg-gray-100` | `dark:bg-gray-800` |
+| Element | Token Class | Maps To |
+|---------|-----------|---------|
+| Card bg | `bg-bg-card` | `--bg-card` (`#121213` dark / `#ffffff` light) |
+| Secondary bg | `bg-bg-secondary` | `--bg-secondary` |
+| Card border | `border-border-subtle` | `--border` |
+| Text primary | `text-text-primary` | `--text-primary` |
+| Text muted | `text-text-tertiary` | `--text-tertiary` |
+| Progress active | `bg-accent` | `--accent` (`#3b82f6`) |
+| Progress inactive | `bg-bg-hover` | `--bg-hover` |
+| Button primary | `bg-accent text-white hover:bg-accent-hover` | `--accent` / `--accent-hover` |
+| Button secondary | `bg-bg-hover text-text-primary` | `--bg-hover` / `--text-primary` |
 
-**Dark mode activation:** Uses Tailwind's `class` strategy — add `dark` class to `<html>` to enable dark mode.
+**Theme activation:** Uses `.light` class on `<html>` to toggle light mode (default is dark). All tokens auto-switch via CSS custom properties in `app.css`.
 
 ## Implementation Steps
 
@@ -221,9 +222,11 @@ The component uses Tailwind CSS dark mode with `dark:` variants:
 
 After implementation, verify:
 1. [ ] TypeScript compiles without errors
-2. [ ] Dark mode works by toggling `dark` class on `<html>`
-3. [ ] Progress bar hides when `total = 1`
-4. [ ] Progress bar shows correct segments when `total > 1`
-5. [ ] Counter is centered between Prev/Next buttons
-6. [ ] All sub-components accept `className` for customization
-7. [ ] No inline styles or vanilla CSS — Tailwind only
+2. [ ] Dark/light mode works by toggling `.light` class on `<html>` (uses CSS custom properties, not `dark:` variants)
+3. [ ] All colors use design tokens (`bg-bg-card`, `bg-accent`, `text-text-primary`, etc.) — NO raw Tailwind colors
+4. [ ] Progress bar hides when `total = 1`
+5. [ ] Progress bar shows correct segments when `total > 1`
+6. [ ] Counter is centered between Prev/Next buttons
+7. [ ] All sub-components accept `className` for customization
+8. [ ] No inline styles or vanilla CSS — Tailwind only
+9. [ ] Templates in `.copilot/skills/add-card-component/templates/` match `components/Card/` exactly

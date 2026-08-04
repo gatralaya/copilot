@@ -20,7 +20,7 @@ describe('Card', () => {
     it('applies default variant classes', () => {
       const { container } = render(<Card>Content</Card>);
       const card = container.firstChild as HTMLElement;
-      expect(card.className).toContain('bg-white');
+      expect(card.className).toContain('bg-bg-card');
       expect(card.className).toContain('rounded-lg');
     });
 
@@ -76,7 +76,7 @@ describe('Card', () => {
     it('renders progress bar when total > 1', () => {
       render(
         <Card>
-          <Card.Header title="Title" progress={{ current: 1, total: 3 }} />
+          <Card.Header title="Title" progress={ { current: 1, total: 3 } } />
         </Card>
       );
       const progressbar = screen.getByRole('progressbar');
@@ -88,7 +88,7 @@ describe('Card', () => {
     it('hides progress bar when total = 1', () => {
       render(
         <Card>
-          <Card.Header title="Title" progress={{ current: 1, total: 1 }} />
+          <Card.Header title="Title" progress={ { current: 1, total: 1 } } />
         </Card>
       );
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
@@ -147,12 +147,12 @@ describe('Card', () => {
 
   describe('Card.Footer', () => {
     it('renders step counter centered', () => {
-      const { container } = render(
+      render(
         <Card>
           <Card.Footer
-            prevButton={{ label: 'Prev', onClick: () => {} }}
-            nextButton={{ label: 'Next', onClick: () => {} }}
-            stepIndicator={{ current: 2, total: 3 }}
+            prevButton={ { label: 'Prev', onClick: () => {} } }
+            nextButton={ { label: 'Next', onClick: () => {} } }
+            stepIndicator={ { current: 2, total: 3 } }
           />
         </Card>
       );
@@ -164,8 +164,8 @@ describe('Card', () => {
       render(
         <Card>
           <Card.Footer
-            prevButton={{ label: 'Prev', onClick: onPrev }}
-            stepIndicator={{ current: 1, total: 3 }}
+            prevButton={ { label: 'Prev', onClick: onPrev } }
+            stepIndicator={ { current: 1, total: 3 } }
           />
         </Card>
       );
@@ -178,8 +178,8 @@ describe('Card', () => {
       render(
         <Card>
           <Card.Footer
-            nextButton={{ label: 'Next', onClick: onNext }}
-            stepIndicator={{ current: 1, total: 3 }}
+            nextButton={ { label: 'Next', onClick: onNext } }
+            stepIndicator={ { current: 1, total: 3 } }
           />
         </Card>
       );
@@ -191,8 +191,8 @@ describe('Card', () => {
       render(
         <Card>
           <Card.Footer
-            nextButton={{ label: 'Next', onClick: () => {} }}
-            stepIndicator={{ current: 1, total: 3 }}
+            nextButton={ { label: 'Next', onClick: () => {} } }
+            stepIndicator={ { current: 1, total: 3 } }
           />
         </Card>
       );
@@ -203,8 +203,8 @@ describe('Card', () => {
       render(
         <Card>
           <Card.Footer
-            prevButton={{ label: 'Prev', onClick: () => {} }}
-            nextButton={{ label: 'Next', onClick: () => {} }}
+            prevButton={ { label: 'Prev', onClick: () => {} } }
+            nextButton={ { label: 'Next', onClick: () => {} } }
           />
         </Card>
       );
@@ -215,7 +215,7 @@ describe('Card', () => {
       render(
         <Card>
           <Card.Footer
-            stepIndicator={{ current: 1, total: 3 }}
+            stepIndicator={ { current: 1, total: 3 } }
             centerContent={<span>Custom</span>}
           />
         </Card>
@@ -236,14 +236,14 @@ describe('Card', () => {
           <Card.Header
             title="Step 1"
             onClose={() => {}}
-            progress={{ current: 1, total: 3 }}
+            progress={ { current: 1, total: 3 } }
           />
           <Card.Content padding="md">
             <input placeholder="Username" />
           </Card.Content>
           <Card.Footer
-            stepIndicator={{ current: 1, total: 3 }}
-            nextButton={{ label: 'Next', onClick: () => {} }}
+            stepIndicator={ { current: 1, total: 3 } }
+            nextButton={ { label: 'Next', onClick: () => {} } }
           />
         </Card>
       );
