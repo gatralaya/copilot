@@ -6,7 +6,7 @@
 - Frontend: React + TypeScript, bundled with **esbuild** via npm workspaces (each module has its own `esbuild.mjs`)
 - Styling: **Tailwind CSS v4** via PostCSS (`npm run build:css`), CSS files in `core/static/css/`
 - Server-rendered shell: Go `html/template` in `core/templates/`, hydrated by TS bundles
-- Database: In-memory (`sync.RWMutex`), SQLite planned
+- Database: SQLite with lazy loading (per-user DBs via LRU cache, global DB singleton)
 - Assets (static files & templates) are embedded into the binary via `go:embed`
 - IDs: ULID (`core/ulid/`)
 

@@ -4,7 +4,7 @@
 - Backend: Go (module: `github.com/ynwd/flow`)
 - Frontend: React + TypeScript, bundled with **esbuild** via npm workspaces
 - Styling: **Tailwind CSS v4** via PostCSS
-- Database: In-memory (`sync.RWMutex`), SQLite planned
+- Database: SQLite with lazy loading (per-user DBs via LRU cache, global DB singleton)
 - Assets (static files & templates) are embedded into the binary via `go:embed`
 - IDs: ULID (`core/ulid/`)
 
