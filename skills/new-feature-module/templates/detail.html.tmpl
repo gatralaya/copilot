@@ -17,8 +17,12 @@
   </script>
 </head>
 <body class="h-dvh flex flex-col bg-bg-primary text-text-primary">
+  <div class="bg-glow" aria-hidden="true"></div>
   <div class="bg-grid" aria-hidden="true"></div>
   <div class="bg-orb bg-orb-1" aria-hidden="true"></div>
+  <div class="bg-orb bg-orb-triple" aria-hidden="true"></div>
+  <div class="bg-particles" aria-hidden="true"></div>
+  <div class="bg-stars" aria-hidden="true"></div>
 
   <div id="__FEATURE__-root" class="flex-1 flex flex-col min-h-0">{{if .InitialHTML}}{{.InitialHTML}}{{else if .ErrorMessage}}<div class="max-w-[42rem] mx-auto px-4 py-6"><div class="text-center py-12 text-text-tertiary"><p class="text-sm m-0">{{.ErrorMessage}}</p><a href="/__FEATURE__" class="inline-flex items-center justify-center gap-1.5 h-9 px-3 rounded-lg text-xs font-medium border border-border-subtle bg-transparent text-text-secondary cursor-pointer transition-all hover:bg-accent-subtle hover:border-accent hover:text-accent active:scale-[.97] no-underline select-none mt-3">Back to __FEATURE_TITLE__</a></div></div>{{end}}</div>
   {{if .InitialDataJSON}}

@@ -27,10 +27,10 @@ body{opacity:0;animation:fadeIn .35s ease .1s forwards}
 .light .glass-card{background:var(--glass-bg,rgba(255,255,255,.7));border:1px solid var(--glass-border,rgba(0,0,0,.06))}
 
 .bg-glow{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.bg-glow::before{content:'';position:absolute;width:500px;height:500px;top:-120px;right:-100px;background:radial-gradient(circle,rgba(99,102,241,.12),transparent 70%);border-radius:50%;animation:orbDrift 12s ease-in-out infinite}
-.bg-glow::after{content:'';position:absolute;width:400px;height:400px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(168,85,247,.1),transparent 70%);border-radius:50%;animation:orbDrift 10s ease-in-out infinite reverse}
-.light .bg-glow::before{background:radial-gradient(circle,rgba(99,102,241,.07),transparent 70%)}
-.light .bg-glow::after{background:radial-gradient(circle,rgba(168,85,247,.06),transparent 70%)}
+.bg-glow::before{content:'';position:absolute;width:500px;height:500px;bottom:-120px;left:10%;background:radial-gradient(circle,rgba(26,56,112,.30),transparent 70%);border-radius:50%;animation:orbFloat 8s ease-in-out infinite}
+.bg-glow::after{content:'';position:absolute;width:600px;height:600px;bottom:-80px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(45,95,158,.35),rgba(26,56,112,.20) 40%,transparent 70%);border-radius:50%;animation:orbFloat 10s ease-in-out infinite 1s}
+.light .bg-glow::before{background:radial-gradient(circle,rgba(99,102,241,.07),transparent 65%);animation:orbDrift 12s ease-in-out infinite}
+.light .bg-glow::after{background:radial-gradient(circle,rgba(168,85,247,.06),transparent 65%);animation:orbDrift 10s ease-in-out infinite reverse}
 
 .bg-grid{position:fixed;inset:0;pointer-events:none;z-index:0}
 .bg-grid::before{content:'';position:absolute;inset:0;background-image:
@@ -58,6 +58,9 @@ body{opacity:0;animation:fadeIn .35s ease .1s forwards}
 <div class="bg-grid" aria-hidden="true"></div>
 <div class="bg-orb bg-orb-1" aria-hidden="true"></div>
 <div class="bg-orb bg-orb-2" aria-hidden="true"></div>
+<div class="bg-orb bg-orb-triple" aria-hidden="true"></div>
+<div class="bg-particles" aria-hidden="true"></div>
+<div class="bg-stars" aria-hidden="true"></div>
 
 <div id="index-root" class="flex-1 flex flex-col min-h-0">{{if .InitialHTML}}{{.InitialHTML}}{{end}}</div>
 
