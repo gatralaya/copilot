@@ -2,6 +2,7 @@ package router
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/ynwd/flow/core/middlewares"
 )
@@ -11,6 +12,12 @@ import (
 func middlewareForRoute(r Route) func(http.Handler) http.Handler {
 	var chain []func(http.Handler) http.Handler
 
+	// Username middleware — inject {username} into context.
+	// Skip for @{username} routes (handled by atPrefixHandler in router.go).
+	if strings.Contains(r.Path, "{username}") && !strings.Contains(r.Path, "@{username}") {
+		chain = append(chain, middlewares.UsernameMiddleware)
+	}
+
 	// Access middleware
 	switch r.Access {
 	case AccessSameOrigin:
@@ -19,9 +26,25 @@ func middlewareForRoute(r Route) func(http.Handler) http.Handler {
 		chain = append(chain, middlewares.Private)
 	}
 
-	// Rate limit middleware (applied after access check)
-	if r.RateLimit != nil {
+	// Rate limit middleware (applied after access check).
+	// Controlled by RATE_LIMIT_ENABLED env var (default: true).
+	// Per-route override takes precedence; public/private routes get global defaults.
+	if !rateLimitEnabled() {
+		// Rate limiting disabled globally — skip all rate limit middleware.
+	} else if r.RateLimit != nil {
 		if rl := middlewares.RateLimit(r.RateLimit.RequestsPerSecond); rl != nil {
+			chain = append(chain, rl)
+		}
+	} else if r.Access == AccessPublic && !r.SSR {
+		// Global default for public API routes — generous but prevents trivial abuse.
+		// SSR pages are excluded (CDN-cached or static).
+		if rl := middlewares.RateLimit(rateLimitPublicRPS()); rl != nil {
+			chain = append(chain, rl)
+		}
+	} else if r.Access == AccessPrivate && !r.SSR {
+		// Global default for private API routes — higher limit for authenticated users,
+		// but still protects against token theft or automated abuse.
+		if rl := middlewares.RateLimit(rateLimitPrivateRPS()); rl != nil {
 			chain = append(chain, rl)
 		}
 	}

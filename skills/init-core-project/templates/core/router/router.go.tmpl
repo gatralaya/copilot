@@ -2,14 +2,17 @@ package router
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"html/template"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 
+	"github.com/ynwd/flow/core/database"
+	"github.com/ynwd/flow/core/middlewares"
+	"github.com/ynwd/flow/core/static"
 	"github.com/ynwd/flow/core/templates"
 )
 
@@ -39,9 +42,83 @@ type Route struct {
 
 // RateLimitConfig configures rate limiting for a route.
 // RequestsPerSecond is the max sustained requests per second.
-// Set to nil on a Route to disable rate limiting.
+// Set to nil on a Route to disable rate limiting for that specific route.
 type RateLimitConfig struct {
 	RequestsPerSecond float64
+}
+
+// rateLimitEnabled returns true if rate limiting is globally enabled.
+// Default: true. Set RATE_LIMIT_ENABLED=false to disable.
+func rateLimitEnabled() bool {
+	v := os.Getenv("RATE_LIMIT_ENABLED")
+	return v != "false" && v != "0"
+}
+
+// rateLimitPublicRPS returns the global RPS limit for public API routes.
+// Default: 1.0 (60 req/min per IP).
+func rateLimitPublicRPS() float64 {
+	if v := os.Getenv("RATE_LIMIT_PUBLIC_RPS"); v != "" {
+		if n, err := parseFloat(v); err == nil {
+			return n
+		}
+	}
+	return 1.0
+}
+
+// rateLimitPrivateRPS returns the global RPS limit for private (authenticated) API routes.
+// Default: 2.0 (120 req/min per IP).
+func rateLimitPrivateRPS() float64 {
+	if v := os.Getenv("RATE_LIMIT_PRIVATE_RPS"); v != "" {
+		if n, err := parseFloat(v); err == nil {
+			return n
+		}
+	}
+	return 2.0
+}
+
+// parseFloat is a simple helper to parse a float64 from a string.
+func parseFloat(s string) (float64, error) {
+	var n float64
+	_, err := fmt.Sscanf(s, "%f", &n)
+	return n, err
+}
+
+// AuthRateLimit returns a RateLimitConfig for authentication routes (login).
+// Default: 0.083 (5 req/min). Overridable via RATE_LIMIT_AUTH_RPS env var.
+func AuthRateLimit() *RateLimitConfig {
+	if !rateLimitEnabled() {
+		return nil
+	}
+	rps := 0.083
+	if v := os.Getenv("RATE_LIMIT_AUTH_RPS"); v != "" {
+		if n, err := parseFloat(v); err == nil {
+			rps = n
+		}
+	}
+	return &RateLimitConfig{RequestsPerSecond: rps}
+}
+
+// RegisterRateLimit returns a RateLimitConfig for registration routes.
+// Default: 0.05 (3 req/min). Overridable via RATE_LIMIT_REGISTER_RPS env var.
+func RegisterRateLimit() *RateLimitConfig {
+	if !rateLimitEnabled() {
+		return nil
+	}
+	rps := 0.05
+	if v := os.Getenv("RATE_LIMIT_REGISTER_RPS"); v != "" {
+		if n, err := parseFloat(v); err == nil {
+			rps = n
+		}
+	}
+	return &RateLimitConfig{RequestsPerSecond: rps}
+}
+
+// atRoute is an internal type for /@{username} routes.
+// Suffix is the path after @{username} (e.g. "/api/v1/users/profile").
+type atRoute struct {
+	Method  string
+	Suffix  string
+	Handler http.HandlerFunc
 }
 
 // Module is the interface every feature module must implement to register its routes.
@@ -76,25 +153,78 @@ func GetModules() map[string]Module {
 	return copied
 }
 
-// cachedFileServer wraps http.StripPrefix + http.FileServer with Cache-Control and
-// Content-Type headers for aggressive caching of fingerprinted assets.
-func cachedFileServer(dir string, _ string) http.Handler {
-	fs := http.FileServer(http.Dir(dir))
+// atPrefixHandler intercepts /@{username} paths before ServeMux.
+// It extracts the username, validates it, injects into context,
+// and dispatches to the matching route by method + suffix.
+func atPrefixHandler(mux *http.ServeMux, routes []atRoute) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Fix MIME type for CSS files
-		if filepath.Ext(r.URL.Path) == ".css" {
-			w.Header().Set("Content-Type", "text/css; charset=utf-8")
+		if strings.HasPrefix(r.URL.Path, "/@") && len(routes) > 0 {
+			rest := strings.TrimPrefix(r.URL.Path, "/@")
+			idx := strings.Index(rest, "/")
+			var username, suffix string
+			if idx < 0 {
+				username = rest
+				suffix = ""
+			} else {
+				username = rest[:idx]
+				suffix = rest[idx:]
+			}
+
+			// Reject empty username (e.g. /@/api/v1/...)
+			if username == "" {
+				http.NotFound(w, r)
+				return
+			}
+			for _, ar := range routes {
+				if ar.Method != r.Method {
+					continue
+				}
+				// Exact match (fast path)
+				if ar.Suffix == suffix {
+					ctx := context.WithValue(r.Context(), middlewares.UsernameKey, username)
+					ar.Handler(w, r.WithContext(ctx))
+					return
+				}
+				// Wildcard match: route suffix contains {param} placeholders.
+				if strings.Contains(ar.Suffix, "{") {
+					idx2 := strings.Index(ar.Suffix, "/{")
+					if idx2 >= 0 && strings.HasPrefix(suffix, ar.Suffix[:idx2]) {
+						ctx := context.WithValue(r.Context(), middlewares.UsernameKey, username)
+						ar.Handler(w, r.WithContext(ctx))
+						return
+					}
+				}
+			}
 		}
-		// Aggressive cache for fingerprinted assets; short cache for everything else
+		mux.ServeHTTP(w, r)
+	})
+}
+
+// cachedFileServer serves static files from disk with Cache-Control headers.
+// In development (APP_ENV=development), never cache so the browser picks up
+// rebuilt assets immediately. In production, cache aggressively with immutable.
+func cachedFileServer(dir string, _ string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if os.Getenv("APP_ENV") == "development" {
+			w.Header().Set("Cache-Control", "no-store")
+			http.StripPrefix("/static/", http.FileServer(http.Dir(dir))).ServeHTTP(w, r)
+			return
+		}
 		maxAge := "3600"
 		if strings.HasPrefix(r.URL.Path, "/static/dist/") || strings.HasPrefix(r.URL.Path, "/static/vendor/") {
 			maxAge = "31536000"
 		}
 		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%s, immutable", maxAge))
-		http.StripPrefix("/static/", fs).ServeHTTP(w, r)
+		http.StripPrefix("/static/", http.FileServer(http.Dir(dir))).ServeHTTP(w, r)
 	})
 }
-func BuildRouter(mux *http.ServeMux) {
+
+// embeddedFileServer serves static files from the embedded FS with correct MIME types.
+func embeddedFileServer() http.Handler {
+	return http.StripPrefix("/static/", http.FileServer(http.FS(static.FS)))
+}
+
+func BuildRouter(mux *http.ServeMux) http.Handler {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -103,13 +233,31 @@ func BuildRouter(mux *http.ServeMux) {
 		return err == nil
 	}
 
-	// Mount static/ directory — root static/ (build output) takes priority, fallback core/static/
+	// Mount static files — core/static/ is the source of truth for CSS, JS, images.
+	// Prefer filesystem if directory exists (for local dev), fallback to embedded FS (for production).
 	switch {
-	case exists("static"):
-		mux.Handle("/static/", cachedFileServer("static", "31536000"))
 	case exists("core/static"):
 		mux.Handle("/static/", cachedFileServer("core/static", "31536000"))
+	case exists("static"):
+		mux.Handle("/static/", cachedFileServer("static", "31536000"))
+	default:
+		mux.Handle("/static/", embeddedFileServer())
 	}
+
+	// Serve sitemap.xml from root (SEO requirement)
+	mux.HandleFunc("GET /sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/xml")
+		http.ServeFileFS(w, r, static.FS, "sitemap.xml")
+	})
+
+	// Serve robots.txt from root (SEO requirement)
+	mux.HandleFunc("GET /robots.txt", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain")
+		http.ServeFileFS(w, r, static.FS, "robots.txt")
+	})
+
+	// Backup health endpoint (public, no auth required)
+	mux.HandleFunc("GET /health/backup", database.HandleBackupHealth)
 
 	// Default: redirect / to first registered module's public page route, or show landing page
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, req *http.Request) {
@@ -149,10 +297,11 @@ func BuildRouter(mux *http.ServeMux) {
 		templates.MinifyAndWrite(w, buf.Bytes())
 	})
 
+	var aroutes []atRoute
+
 	// Mount per-module routes and static dirs
 	for name, mod := range modules {
 		for _, r := range mod.Routes() {
-			// Skip index module root route — handled by the GET /{$} handler above
 			if name == "index" && r.Method == "GET" {
 				continue
 			}
@@ -160,14 +309,18 @@ func BuildRouter(mux *http.ServeMux) {
 			if mw := middlewareForRoute(r); mw != nil {
 				handler = mw(handler).ServeHTTP
 			}
+
+			// Auto-detect: path contains "@{username}" → intercept before ServeMux.
+			if strings.Contains(r.Path, "@{username}") {
+				suffix := strings.Replace(r.Path, "/@{username}", "", 1)
+				aroutes = append(aroutes, atRoute{Method: r.Method, Suffix: suffix, Handler: handler})
+				continue
+			}
+
 			pattern := fmt.Sprintf("%s %s", r.Method, r.Path)
 			mux.HandleFunc(pattern, handler)
 		}
-
-		staticDir := filepath.Join("modules", name, "static")
-		if exists(staticDir) {
-			prefix := fmt.Sprintf("/static/%s/", name)
-			mux.Handle(prefix, http.StripPrefix(prefix, http.FileServer(http.Dir(staticDir))))
-		}
 	}
+
+	return atPrefixHandler(mux, aroutes)
 }
