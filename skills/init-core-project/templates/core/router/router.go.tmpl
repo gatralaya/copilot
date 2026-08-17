@@ -202,7 +202,8 @@ func atPrefixHandler(mux *http.ServeMux, routes []atRoute) http.Handler {
 
 // cachedFileServer serves static files from disk with Cache-Control headers.
 // In development (APP_ENV=development), never cache so the browser picks up
-// rebuilt assets immediately. In production, cache aggressively with immutable.
+// rebuilt assets immediately. In production, cache aggressively but allow
+// revalidation via ?v= query string on each deploy.
 func cachedFileServer(dir string, _ string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if os.Getenv("APP_ENV") == "development" {
@@ -214,7 +215,8 @@ func cachedFileServer(dir string, _ string) http.Handler {
 		if strings.HasPrefix(r.URL.Path, "/static/dist/") || strings.HasPrefix(r.URL.Path, "/static/vendor/") {
 			maxAge = "31536000"
 		}
-		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%s, immutable", maxAge))
+		// No "immutable" — allows browser to revalidate via ?v= cache-bust param.
+		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%s", maxAge))
 		http.StripPrefix("/static/", http.FileServer(http.Dir(dir))).ServeHTTP(w, r)
 	})
 }
